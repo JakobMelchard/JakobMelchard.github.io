@@ -212,6 +212,7 @@
     }
 
     #typing-container {
+      position: relative;
       width: min(900px, 92vw);
       background: rgba(12,12,12,0.94);
       border: 1px solid rgba(189,147,249,0.14);
@@ -280,7 +281,7 @@
       line-height: 2.75rem;
       color: rgba(248,248,242,0.10);
       letter-spacing: 0.025em;
-      height: calc(2.75rem * 3);
+      height: calc(2.75rem * 4);
       overflow: hidden;
       cursor: text;
       user-select: none;
@@ -531,6 +532,38 @@
       transform: translateX(-50%) translateY(0);
     }
 
+    @keyframes screen-shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+      20%, 40%, 60%, 80% { transform: translateX(8px); }
+    }
+
+    body.shake {
+      animation: screen-shake 0.45s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    #typing-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: 1px solid rgba(255, 85, 85, 0.3);
+      color: var(--red);
+      font-family: inherit;
+      font-size: 1rem;
+      line-height: 1;
+      padding: 0.18rem 0.52rem;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.55;
+      transition: opacity 0.15s, background 0.15s;
+    }
+
+    #typing-close:hover {
+      opacity: 1;
+      background: rgba(255, 85, 85, 0.12);
+    }
+
   </style>
 </head>
 <body>
@@ -544,6 +577,7 @@
   <!-- Typing Test Modal -->
   <div id="typing-modal">
     <div id="typing-container">
+      <button id="typing-close" title="Close">×</button>
       <div id="typing-meta">
         <span>type</span><span class="sep">·</span>
         <span id="typing-meta-time">15</span>s
@@ -676,6 +710,13 @@
       setTimeout(() => input.classList.remove(`halo-${color}`), 600);
     }
 
+    function shakeScreen() {
+      document.body.classList.remove('shake');
+      void document.body.offsetWidth; // force reflow to restart CSS animation
+      document.body.classList.add('shake');
+      document.body.addEventListener('animationend', () => document.body.classList.remove('shake'), { once: true });
+    }
+
     function render(fromArrow = false) {
       results.innerHTML = filtered.map((item, idx) => {
         const sel      = idx === selectedIdx ? ' selected' : '';
@@ -707,15 +748,6 @@
 
     function filter() {
       const query = input.value.trim();
-      if (query === TRIGGER) {
-        flashHalo('green');
-        input.value = '';
-        filtered = items;
-        selectedIdx = 0;
-        render();
-        openTypingTest();
-        return;
-      }
       filtered    = query
         ? items.filter(item => fuzzyMatch(item.key, query) || fuzzyMatch(item.desc, query))
         : items;
@@ -731,7 +763,7 @@
         const query = input.value.trim();
         if (query === TRIGGER) { flashHalo('green'); input.value = ''; filter(); openTypingTest(); return; }
         if (filtered.length > 0) { openItem(filtered[selectedIdx]); return; }
-        if (query.length > 0) flashHalo('red');
+        if (query.length > 0) { flashHalo('red'); shakeScreen(); }
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         selectedIdx = Math.min(filtered.length - 1, selectedIdx + 1);
@@ -977,6 +1009,7 @@
     $tg.addEventListener('blur',()=>{ if(!tdone) $tw.classList.add('blurred'); });
     $tg.addEventListener('focus',()=>{ if(!tdone) $tw.classList.remove('blurred'); });
     document.getElementById('typing-r-again').addEventListener('click',resetTyping);
+    document.getElementById('typing-close').addEventListener('click',closeTypingTest);
   </script>
 </body>
 </html>
