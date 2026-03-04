@@ -154,6 +154,22 @@
       color: var(--muted);
     }
 
+    .item[data-color="pink"] .label {
+      color: var(--pink);
+    }
+
+    .item[data-color="purple"] .label {
+      color: var(--purple);
+    }
+
+    .item[data-color="cyan"] .label {
+      color: var(--cyan);
+    }
+
+    .item[data-color="green"] .label {
+      color: #50fa7b;
+    }
+
     .match {
       color: var(--cyan);
       font-weight: 600;
@@ -167,11 +183,11 @@
 
   <script>
     const items = [
-      { key: 'cv', desc: 'Curriculum Vitae', url: '/cv' },
-      { key: 'github', desc: 'GitHub Profile', url: 'https://github.com/JakobMelchard' },
-      { key: 'contact', desc: 'Email', url: 'mailto:jakob@melchard.org' },
-      { key: 'sh', desc: 'Shell', url: '/sh' },
-      { key: 'health', desc: 'Status', url: '/health' },
+      { key: 'cv', desc: 'Curriculum Vitae', url: '/cv', color: 'pink' },
+      { key: 'github', desc: 'GitHub Profile', url: 'https://github.com/JakobMelchard', color: 'purple' },
+      { key: 'contact', desc: 'Email', url: 'mailto:jakob@melchard.org', color: 'green' },
+      { key: 'sh', desc: 'Shell', url: '/sh', color: 'cyan' },
+      { key: 'health', desc: 'Status', url: '/health', color: 'purple' },
     ];
 
     let filtered = items;
@@ -212,15 +228,16 @@
         const sel = idx === selectedIdx ? ' selected' : '';
         const keyHtml = highlightMatches(item.key, input.value);
         const descHtml = highlightMatches(item.desc, input.value);
-        return `<div class="item${sel}" data-idx="${idx}">
+        return `<a href="${item.url}" class="item${sel}" data-idx="${idx}" data-color="${item.color}">
           <span class="label">${keyHtml}</span>
           <span class="desc">${descHtml}</span>
-        </div>`;
+        </a>`;
       }).join('');
 
-      // Add click handlers
+      // Add click handlers to prevent default and navigate
       document.querySelectorAll('.item').forEach(el => {
-        el.addEventListener('click', () => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
           selectedIdx = parseInt(el.dataset.idx);
           navigate();
         });
