@@ -565,10 +565,10 @@
   <script>
     const items = [
       { key: 'github',  desc: 'GitHub Profile',   url: 'https://github.com/JakobMelchard',  color: 'purple' },
-      { key: 'cv',      desc: 'Curriculum Vitae', url: '/cv',                               color: 'pink'   },
-      { key: 'contact', desc: 'Email',            email: 'jakob@melchard.org',              color: 'green'  },
+      { key: 'cv',      desc: 'Curriculum Vitae', url: '/cv',                               color: 'purple'   },
+      { key: 'contact', desc: 'Email',            email: 'jakob@melchard.org',              color: 'purple'  },
       { key: 'health',  desc: 'Status',           url: '/health',                           color: 'purple' },
-      { key: 'sh',      desc: 'Shell',            url: '/sh',                               color: 'cyan'   },
+      { key: 'sh',      desc: 'Shell',            url: '/sh',                               color: 'purple'   },
     ];
 
     let filtered = items;
@@ -606,7 +606,6 @@
 
     function openItem(item) {
       if (item.email) {
-        // Copy email to clipboard
         navigator.clipboard.writeText(item.email).then(() => {
           showToast('contact address copied to clipboard');
         }).catch(() => {
@@ -849,7 +848,6 @@
     }
 
     function onTypingKey(e) {
-      // Toggle modal with ctrl+e
       if(e.ctrlKey && e.key === 'e') {
         e.preventDefault();
         closeTypingTest();
@@ -949,7 +947,6 @@
     }
 
     document.addEventListener('keydown', (e) => {
-      // Global ctrl+e toggle
       if(e.ctrlKey && e.key === 'e') {
         e.preventDefault();
         if($tm.classList.contains('show')) {
@@ -960,7 +957,6 @@
         return;
       }
 
-      // If modal is open, handle typing test keys
       if($tm.classList.contains('show')) {
         onTypingKey(e);
       }
