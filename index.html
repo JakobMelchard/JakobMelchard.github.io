@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jakob Melchard</title>
+  <meta name="description" content="Jakob Melchard — software engineer">
+  <link rel="canonical" href="https://jakob.melchard.org">
+  <meta property="og:title" content="Jakob Melchard">
+  <meta property="og:description" content="Software engineer">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jakob.melchard.org">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -135,7 +144,7 @@
       color: var(--text);
       font-size: .9rem;
       cursor: pointer;
-      transition: all .2s ease;
+      transition: border-color 0.2s ease, background 0.2s ease;
       flex-shrink: 0;
     }
 
@@ -159,10 +168,13 @@
       color: var(--muted);
     }
 
+    .item.selected .label { color: var(--pink); }
+    .item.selected .desc  { color: rgba(255, 121, 198, 0.55); }
+
     .item[data-color="pink"] .label   { color: var(--pink); }
     .item[data-color="purple"] .label { color: var(--purple); }
     .item[data-color="cyan"] .label   { color: var(--cyan); }
-    .item[data-color="green"] .label  { color: #50fa7b; }
+    .item[data-color="green"] .label  { color: var(--green); }
 
     .match {
       color: var(--yellow);
@@ -187,7 +199,7 @@
 
     #typing-modal.show {
       opacity: 1;
-      pointer-events: all;
+      pointer-events: auto;
     }
 
     #typing-container {
@@ -240,7 +252,7 @@
     .typing-lv-val { color: rgba(248,248,242,0.52); }
     #typing-live-time { color: var(--cyan); }
     #typing-live-time.urgent {
-      color: #ff5555;
+      color: var(--red);
       animation: tp 0.5s ease infinite alternate;
     }
 
@@ -293,9 +305,9 @@
       transition: color 0.04s;
     }
 
-    .typing-letter.correct { color: #50fa7b; }
+    .typing-letter.correct { color: var(--green); }
     .typing-letter.wrong {
-      color: #ff5555;
+      color: var(--red);
       background: rgba(255,85,85,0.11);
       border-radius: 2px;
     }
@@ -381,7 +393,7 @@
 
     #typing-overlay.show {
       opacity: 1;
-      pointer-events: all;
+      pointer-events: auto;
     }
 
     #typing-card {
@@ -437,8 +449,8 @@
       line-height: 1;
     }
 
-    .typing-stat big.g { color: #50fa7b; }
-    .typing-stat big.r { color: #ff5555; }
+    .typing-stat big.g { color: var(--green); }
+    .typing-stat big.r { color: var(--red); }
 
     .typing-stat small {
       display: block;
@@ -494,7 +506,7 @@
       border: 1px solid rgba(80, 250, 123, 0.3);
       border-radius: 8px;
       padding: 0.75rem 1.5rem;
-      color: #50fa7b;
+      color: var(--green);
       font-size: 0.85rem;
       letter-spacing: 0.05em;
       z-index: 2000;
@@ -509,15 +521,49 @@
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+
+    /* testme Easter-egg swipe pill */
+    #testme-swipe {
+      width: 480px;
+      max-width: 90vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 0.69rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      z-index: 1;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    #testme-swipe.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
   </style>
 </head>
 <body>
   <h1>Jakob Melchard</h1>
   <input type="text" id="search-input" placeholder="Type to search..." autocomplete="off" autofocus>
   <div id="results"></div>
+  <div id="testme-swipe">↑ &nbsp; type</div>
 
   <!-- Toast notification -->
-  <div id="toast"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
 
   <!-- Typing Test Modal -->
   <div id="typing-modal">
@@ -535,7 +581,7 @@
 
       <div id="typing-wrap">
         <div id="typing-words"><div id="typing-wi"></div></div>
-        <input id="typing-ghost" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <input id="typing-ghost" type="text" aria-hidden="true" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
       </div>
 
       <div id="typing-hint">
@@ -565,6 +611,7 @@
     </div>
   </div>
 
+  <script src="words.js"></script>
   <script>
     const items = [
       { key: 'github',  desc: 'GitHub Profile',   url: 'https://github.com/JakobMelchard',  color: 'purple' },
@@ -577,8 +624,11 @@
     let filtered = items;
     let selectedIdx = 0;
 
-    const input   = document.getElementById('search-input');
-    const results = document.getElementById('results');
+    const input          = document.getElementById('search-input');
+    const results        = document.getElementById('results');
+    const $h1            = /** @type {HTMLHeadingElement} */ (document.querySelector('h1'));
+    const $toast         = /** @type {HTMLDivElement} */ (document.getElementById('toast'));
+    const $testmeSwipe   = /** @type {HTMLDivElement} */ (document.getElementById('testme-swipe'));
 
     function fuzzyMatch(str, query) {
       let i = 0, j = 0;
@@ -609,22 +659,26 @@
 
     function openItem(item) {
       if (item.email) {
-        navigator.clipboard.writeText(item.email).then(() => {
-          showToast('contact address copied to clipboard');
-        }).catch(() => {
-          showToast('failed to copy email');
-        });
+        const isTouch = window.matchMedia('(hover: none)').matches;
+        if (!isTouch && navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(item.email).then(() => {
+            showToast('contact address copied to clipboard');
+          }).catch(() => {
+            window.location.href = `mailto:${item.email}`;
+          });
+        } else {
+          window.location.href = `mailto:${item.email}`;
+        }
       } else if (item.url) {
         window.location.href = item.url;
       }
     }
 
     function showToast(message) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.classList.add('show');
+      $toast.textContent = message;
+      $toast.classList.add('show');
       setTimeout(() => {
-        toast.classList.remove('show');
+        $toast.classList.remove('show');
       }, 2500);
     }
 
@@ -641,8 +695,8 @@
       }).join('');
 
       document.querySelectorAll('.item').forEach(el => {
-        // mousedown fires before blur — preventDefault keeps focus on the input
-        el.addEventListener('mousedown', (e) => e.preventDefault());
+        // pointerdown fires before blur; skip middle-clicks so they can open links in a new tab
+        el.addEventListener('pointerdown', (e) => { if (e.button !== 1) e.preventDefault(); });
 
         el.addEventListener('click', (e) => {
           e.preventDefault();
@@ -651,6 +705,10 @@
           openItem(filtered[selectedIdx]);
         });
       });
+
+      // Scroll selected item into view after keyboard navigation
+      const sel = results.querySelector('.item.selected');
+      if (sel) sel.scrollIntoView({ block: 'nearest' });
     }
 
     function filter() {
@@ -660,6 +718,7 @@
         : items;
       selectedIdx = 0;
       render();
+      $testmeSwipe.classList.toggle('show', query.toLowerCase() === 'testme');
     }
 
     input.addEventListener('input', filter);
@@ -682,61 +741,8 @@
     render();
 
     // ── Typing Test ──────────────────────────────────────────────────────────────
-    const W = [
-      "the","be","to","of","and","a","in","that","have","it","for","not","on","with",
-      "he","as","you","do","at","this","but","his","by","from","they","we","say","her",
-      "she","or","an","will","my","one","all","would","there","their","what","so","up",
-      "out","if","about","who","get","which","go","me","when","make","can","like","time",
-      "no","just","him","know","take","people","into","year","your","good","some","could",
-      "them","see","other","than","then","now","look","only","come","its","over","think",
-      "also","back","after","use","two","how","our","work","first","well","way","even",
-      "new","want","because","any","these","give","day","most","us","great","between",
-      "need","large","often","hold","turn","been","said","made","found","left","called",
-      "used","asked","felt","tried","came","went","gave","told","kept","let","began",
-      "run","set","put","open","move","live","play","point","hear","write","read","stand",
-      "lose","pay","meet","include","continue","learn","change","lead","watch","follow",
-      "stop","create","speak","allow","spend","grow","walk","win","offer","remember",
-      "love","consider","appear","buy","wait","serve","send","expect","build","stay",
-      "fall","cut","reach","remain","suggest","raise","pass","sell","require","report",
-      "decide","pull","break","plan","already","although","another","anything","around",
-      "become","before","both","business","case","children","city","close","country",
-      "course","different","down","each","early","end","enough","every","example","face",
-      "fact","family","few","four","government","group","hand","help","home","house",
-      "however","important","keep","kind","large","last","late","life","little","long",
-      "man","many","matter","might","money","more","morning","much","must","name","never",
-      "next","night","nothing","number","often","old","once","own","part","past","place",
-      "possible","power","problem","public","question","real","right","room","same",
-      "second","seem","side","small","social","something","still","such","system","thing",
-      "three","through","today","together","too","took","toward","under","until","upon",
-      "very","while","whole","within","without","word","world","young","able","above",
-      "across","age","air","almost","along","always","among","away","behind","below",
-      "best","better","beyond","black","blue","body","book","brought","care","carry",
-      "certain","clear","common","cost","dead","drive","during","east","either","else",
-      "entire","ever","exist","experience","field","figure","final","five","force","free",
-      "front","full","future","general","gone","half","hard","heavy","human","idea",
-      "instead","itself","knowledge","known","less","likely","line","local","low","main",
-      "middle","mind","national","nature","near","north","note","notice","object","order",
-      "outside","page","particular","perfect","perhaps","period","present","process",
-      "produce","program","provide","quite","rather","ready","receive","recent","region",
-      "result","return","role","safe","school","sense","short","since","single","size",
-      "sometimes","soon","south","special","specific","start","state","step","story",
-      "strong","student","study","subject","support","sure","surface","table","tend",
-      "term","theory","thought","thousand","throughout","trade","type","understand",
-      "unless","usually","value","various","view","voice","west","whether","white","wide",
-      "wind","write","wrong","yes","yet","zero","system","network","server","client",
-      "data","file","code","error","debug","test","build","deploy","config","token",
-      "cache","queue","event","state","class","type","value","index","array","stack",
-      "block","node","tree","list","hash","map","key","port","host","path","base","core",
-      "sync","async","fetch","parse","merge","split","sort","filter","reduce","apply",
-      "next","prev","init","load","save","emit","drop","add","remove","clear","reset"
-    ];
-
-    const SYM = [
-      '!','@','#','$','%','^','&','*','(',')','_','+','-','=',
-      '[',']','{','}','|',';',':',',','.','<','>','/','?','`','~','\\'
-    ];
-
-    const PUNCT = [[',',18],['.',12],['!',4],['?',4],[':',4],[';',3],["'",3],['"',2],['-',3]];
+    // Word pool, symbols, and punctuation weights are defined in words.js
+    // (loaded before this script) as WORDS, SYM, and PUNCT.
 
     function rp() {
       let r = Math.random() * PUNCT.reduce((s,[,w])=>s+w,0);
@@ -744,7 +750,7 @@
       return ',';
     }
 
-    function rw() { return W[Math.floor(Math.random()*W.length)]; }
+    function rw() { return WORDS[Math.floor(Math.random()*WORDS.length)]; }
     function rs() { return SYM[Math.floor(Math.random()*SYM.length)]; }
 
     function genWords(n=110) {
@@ -969,6 +975,55 @@
     $tg.addEventListener('blur',()=>{ if(!tdone) $tw.classList.add('blurred'); });
     $tg.addEventListener('focus',()=>{ if(!tdone) $tw.classList.remove('blurred'); });
     document.getElementById('typing-r-again').addEventListener('click',resetTyping);
+
+    // ── Mobile gesture triggers ────────────────────────────────────────────────────
+
+    // 1. Tap the h1 label to open the typing test
+    $h1.addEventListener('click', openTypingTest);
+
+    // 2. Long-press anywhere on the page background (touch-only, ~400 ms, no movement)
+    /** @type {ReturnType<typeof setTimeout>|null} */
+    let longPressTimer = null;
+    /** @type {number} */ let lpX = 0;
+    /** @type {number} */ let lpY = 0;
+
+    /** @type {number} Duration in ms before a held touch counts as a long-press. */
+    const LONG_PRESS_MS   = 400;
+    /** @type {number} Max pointer movement in px before cancelling a long-press. */
+    const LONG_PRESS_SLOP = 10;
+
+    document.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'touch') return;
+      if (e.target.closest('a, button, input, #typing-modal, #testme-swipe, #results')) return;
+      lpX = e.clientX; lpY = e.clientY;
+      longPressTimer = setTimeout(() => { longPressTimer = null; openTypingTest(); }, LONG_PRESS_MS);
+    });
+    document.addEventListener('pointermove', (e) => {
+      if (!longPressTimer) return;
+      if (Math.hypot(e.clientX - lpX, e.clientY - lpY) > LONG_PRESS_SLOP) {
+        clearTimeout(longPressTimer); longPressTimer = null;
+      }
+    });
+    ['pointerup', 'pointercancel'].forEach(evt =>
+      document.addEventListener(evt, () => { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } })
+    );
+
+    // 3. Swipe up from inside the results list
+    /** @type {number} */ let resultsSwipeY = 0;
+    results.addEventListener('touchstart', (e) => { resultsSwipeY = e.touches[0].clientY; }, { passive: true });
+    results.addEventListener('touchend', (e) => {
+      if (resultsSwipeY - e.changedTouches[0].clientY > 80) openTypingTest();
+    }, { passive: true });
+
+    // 4. "testme" Easter-egg pill — swipe up or tap to open
+    /** @type {number} */ let testmeSwipeY = 0;
+    $testmeSwipe.addEventListener('touchstart', (e) => { testmeSwipeY = e.touches[0].clientY; }, { passive: true });
+    $testmeSwipe.addEventListener('touchend', (e) => {
+      if (testmeSwipeY - e.changedTouches[0].clientY > 40) {
+        input.value = ''; filter(); openTypingTest();
+      }
+    }, { passive: true });
+    $testmeSwipe.addEventListener('click', () => { input.value = ''; filter(); openTypingTest(); });
   </script>
 </body>
 </html>
