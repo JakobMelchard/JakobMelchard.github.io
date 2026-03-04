@@ -154,21 +154,10 @@
       color: var(--muted);
     }
 
-    .item[data-color="pink"] .label {
-      color: var(--pink);
-    }
-
-    .item[data-color="purple"] .label {
-      color: var(--purple);
-    }
-
-    .item[data-color="cyan"] .label {
-      color: var(--cyan);
-    }
-
-    .item[data-color="green"] .label {
-      color: #50fa7b;
-    }
+    .item[data-color="pink"] .label   { color: var(--pink); }
+    .item[data-color="purple"] .label { color: var(--purple); }
+    .item[data-color="cyan"] .label   { color: var(--cyan); }
+    .item[data-color="green"] .label  { color: #50fa7b; }
 
     .match {
       color: var(--cyan);
@@ -183,22 +172,22 @@
 
   <script>
     const items = [
-      { key: 'cv', desc: 'Curriculum Vitae', url: '/cv', color: 'pink' },
-      { key: 'github', desc: 'GitHub Profile', url: 'https://github.com/JakobMelchard', color: 'purple' },
-      { key: 'contact', desc: 'Email', url: 'mailto:jakob@melchard.org', color: 'green' },
-      { key: 'sh', desc: 'Shell', url: '/sh', color: 'cyan' },
-      { key: 'health', desc: 'Status', url: '/health', color: 'purple' },
+      { key: 'cv',      desc: 'Curriculum Vitae', url: '/cv',                               color: 'pink'   },
+      { key: 'github',  desc: 'GitHub Profile',   url: 'https://github.com/JakobMelchard',  color: 'purple' },
+      { key: 'contact', desc: 'Email',             url: 'mailto:jakob@melchard.org',         color: 'green'  },
+      { key: 'sh',      desc: 'Shell',             url: '/sh',                               color: 'cyan'   },
+      { key: 'health',  desc: 'Status',            url: '/health',                           color: 'purple' },
     ];
 
     let filtered = items;
     let selectedIdx = 0;
 
-    const input = document.getElementById('search-input');
+    const input   = document.getElementById('search-input');
     const results = document.getElementById('results');
 
     function fuzzyMatch(str, query) {
       let i = 0, j = 0;
-      str = str.toLowerCase();
+      str   = str.toLowerCase();
       query = query.toLowerCase();
       while (i < str.length && j < query.length) {
         if (str[i] === query[j]) j++;
@@ -223,10 +212,23 @@
       return result;
     }
 
+    function openItem(item) {
+      if (item.url.startsWith('mailto:')) {
+        // Temporary anchor click is the most reliable cross-browser mailto trigger
+        const a = document.createElement('a');
+        a.href = item.url;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        window.location.href = item.url;
+      }
+    }
+
     function render() {
       results.innerHTML = filtered.map((item, idx) => {
-        const sel = idx === selectedIdx ? ' selected' : '';
-        const keyHtml = highlightMatches(item.key, input.value);
+        const sel      = idx === selectedIdx ? ' selected' : '';
+        const keyHtml  = highlightMatches(item.key,  input.value);
         const descHtml = highlightMatches(item.desc, input.value);
         return `<a href="${item.url}" class="item${sel}" data-idx="${idx}" data-color="${item.color}">
           <span class="label">${keyHtml}</span>
@@ -235,42 +237,25 @@
       }).join('');
 
       document.querySelectorAll('.item').forEach(el => {
+        // mousedown fires before blur — preventDefault keeps focus on the input
+        el.addEventListener('mousedown', (e) => e.preventDefault());
+
         el.addEventListener('click', (e) => {
-          const idx = parseInt(el.dataset.idx);
-          const item = filtered[idx];
-          if (item.url.startsWith('mailto:')) {
-            // Let the browser handle mailto naturally via the <a href>
-            return;
-          }
           e.preventDefault();
-          selectedIdx = idx;
-          navigate();
+          selectedIdx = parseInt(el.dataset.idx);
+          render();
+          openItem(filtered[selectedIdx]);
         });
       });
     }
 
     function filter() {
       const query = input.value.trim();
-      if (!query) {
-        filtered = items;
-      } else {
-        filtered = items.filter(item =>
-          fuzzyMatch(item.key, query) || fuzzyMatch(item.desc, query)
-        );
-      }
+      filtered    = query
+        ? items.filter(item => fuzzyMatch(item.key, query) || fuzzyMatch(item.desc, query))
+        : items;
       selectedIdx = 0;
       render();
-    }
-
-    function navigate() {
-      if (filtered.length > 0) {
-        const item = filtered[selectedIdx];
-        if (item.url.startsWith('mailto:')) {
-          window.open(item.url);
-        } else {
-          window.location.href = item.url;
-        }
-      }
     }
 
     input.addEventListener('input', filter);
@@ -278,7 +263,7 @@
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        navigate();
+        if (filtered.length > 0) openItem(filtered[selectedIdx]);
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         selectedIdx = Math.min(filtered.length - 1, selectedIdx + 1);
