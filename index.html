@@ -77,6 +77,18 @@
       cursor: pointer;
     }
 
+    h1:focus-visible {
+      outline: 1px solid rgba(139, 233, 253, 0.5);
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+
+    h1 .type-hint {
+      font-size: 0.75em;
+      opacity: 0.35;
+      letter-spacing: 0.12em;
+    }
+
     #search-input {
       width: 480px;
       max-width: 90vw;
@@ -557,7 +569,7 @@
   </style>
 </head>
 <body>
-  <h1>Jakob Melchard</h1>
+  <h1 tabindex="0">Jakob Melchard <span class="type-hint">· type</span></h1>
   <input type="text" id="search-input" placeholder="Type to search..." autocomplete="off" autofocus>
   <div id="results"></div>
   <div id="testme-swipe">↑ &nbsp; type</div>
@@ -614,11 +626,10 @@
   <script src="words.js"></script>
   <script>
     const items = [
-      { key: 'github',  desc: 'GitHub Profile',   url: 'https://github.com/JakobMelchard',  color: 'purple' },
-      { key: 'cv',      desc: 'Curriculum Vitae', url: '/cv',                               color: 'purple'   },
-      { key: 'contact', desc: 'Email',            email: 'jakob@melchard.org',              color: 'purple'  },
-      { key: 'health',  desc: 'Status',           url: '/health',                           color: 'purple' },
-      { key: 'sh',      desc: 'Shell',            url: '/sh',                               color: 'purple'   },
+      { key: 'github',  desc: 'GitHub Profile',   url: 'https://github.com/JakobMelchard',  color: 'cyan'   },
+      { key: 'cv',      desc: 'Curriculum Vitae', url: '/cv',                               color: 'purple' },
+      { key: 'contact', desc: 'Email',            email: 'jakob@melchard.org',              color: 'pink'   },
+      { key: 'health',  desc: 'Status',           url: '/health',                           color: 'green'  },
     ];
 
     let filtered = items;
@@ -980,6 +991,7 @@
 
     // 1. Tap the h1 label to open the typing test
     $h1.addEventListener('click', openTypingTest);
+    $h1.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); openTypingTest(); } });
 
     // 2. Long-press anywhere on the page background (touch-only, ~400 ms, no movement)
     /** @type {ReturnType<typeof setTimeout>|null} */
