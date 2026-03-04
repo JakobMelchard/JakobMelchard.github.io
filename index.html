@@ -3,16 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jakob Melchard</title>
-  <meta name="description" content="Jakob Melchard — software engineer">
+  <title>Jakob Melchard — DevOps &amp; Data Engineer | Vienna, Austria</title>
+  <meta name="description" content="DevOps and Data Engineer based in Vienna, Austria. Platform engineering, Kafka infrastructure, Databricks pipelines.">
+  <meta name="author" content="Jakob Melchard">
+  <meta name="keywords" content="Jakob Melchard, Melchard, DevOps Engineer Vienna, Data Engineer Austria, ORF engineer, Kafka engineer">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="geo.region" content="AT-9">
+  <meta name="geo.placename" content="Vienna, Austria">
+  <meta name="ICBM" content="48.2082, 16.3738">
   <link rel="canonical" href="https://jakob.melchard.org">
-  <meta property="og:title" content="Jakob Melchard">
-  <meta property="og:description" content="Software engineer">
+  <meta property="og:title" content="Jakob Melchard — DevOps &amp; Data Engineer">
+  <meta property="og:description" content="DevOps and Data Engineer based in Vienna, Austria. Platform engineering, Kafka infrastructure, Databricks pipelines.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://jakob.melchard.org">
+  <meta property="og:image" content="https://jakob.melchard.org/assets/og-card.png">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="Jakob Melchard">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Jakob Melchard — DevOps &amp; Data Engineer">
+  <meta name="twitter:description" content="DevOps and Data Engineer based in Vienna, Austria.">
+  <meta name="twitter:image" content="https://jakob.melchard.org/assets/og-card.png">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Jakob Melchard",
+    "url": "https://jakob.melchard.org",
+    "image": "https://jakob.melchard.org/assets/jakob-melchard.jpg",
+    "jobTitle": "DevOps & Data Engineer",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "Österreichischer Rundfunk (ORF)"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Vienna",
+      "addressCountry": "AT"
+    },
+    "email": "jakob@melchard.org",
+    "sameAs": [
+      "https://github.com/JakobMelchard",
+      "https://linkedin.com/in/jakobmelchard"
+    ],
+    "knowsAbout": [
+      "DevOps Engineering",
+      "Data Engineering",
+      "Apache Kafka",
+      "Kubernetes",
+      "Databricks",
+      "GitOps",
+      "Platform Engineering"
+    ],
+    "nationality": {
+      "@type": "Country",
+      "name": "Austria"
+    }
+  }
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -621,9 +675,21 @@
   </style>
 </head>
 <body>
+  <noscript>
+    <nav aria-label="Links">
+      <ul style="font-family:monospace;list-style:none;padding:2rem;color:#e0e0e0;background:#0a0a0a;min-height:100vh">
+        <li><a href="https://github.com/JakobMelchard" style="color:#8be9fd">GitHub</a></li>
+        <li><a href="https://jakob.melchard.org/cv" style="color:#bd93f9">CV</a></li>
+        <li><a href="mailto:jakob@melchard.org" style="color:#ff79c6">Contact</a></li>
+        <li><a href="https://jakob.melchard.org/health" style="color:#50fa7b">Health</a></li>
+      </ul>
+    </nav>
+  </noscript>
+  <main>
   <h1>Jakob Melchard</h1>
-  <input type="text" id="search-input" placeholder="Type to search..." autocomplete="off" autofocus>
-  <div id="results"></div>
+  <input type="text" id="search-input" placeholder="Type to search..." autocomplete="off" autofocus aria-label="Search commands">
+  <div id="results" role="listbox" aria-live="polite"></div>
+  </main>
 
   <!-- Toast notification -->
   <div id="toast" role="status" aria-live="polite"></div>
@@ -822,7 +888,8 @@
         const keyHtml  = highlightMatches(item.key,  input.value);
         const descHtml = highlightMatches(item.desc, input.value);
         const href = item.url || '#';
-        return `<a href="${href}" class="item${sel}" data-idx="${idx}" data-color="${item.color}">
+        const isSelected = idx === selectedIdx;
+        return `<a href="${href}" class="item${sel}" data-idx="${idx}" data-color="${item.color}" role="option" aria-selected="${isSelected}">
           <span class="label">${keyHtml}</span>
           <span class="desc">${descHtml}</span>
         </a>`;
