@@ -89,13 +89,23 @@
       font-family: inherit;
       font-size: .9rem;
       outline: none;
-      transition: border-color 0.3s ease, background 0.3s ease;
+      transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
       z-index: 1;
     }
 
     #search-input:focus {
       border-color: var(--border-hover);
       background: rgba(0, 0, 0, 0.5);
+    }
+
+    #search-input.halo-green {
+      box-shadow: 0 0 0 3px rgba(80, 250, 123, 0.4), 0 0 24px rgba(80, 250, 123, 0.25);
+      border-color: rgba(80, 250, 123, 0.6);
+    }
+
+    #search-input.halo-red {
+      box-shadow: 0 0 0 3px rgba(255, 85, 85, 0.4), 0 0 24px rgba(255, 85, 85, 0.25);
+      border-color: rgba(255, 85, 85, 0.6);
     }
 
     #search-input::placeholder {
@@ -660,7 +670,13 @@
       }, 2500);
     }
 
-    function render() {
+    function flashHalo(color) {
+      input.classList.remove('halo-green', 'halo-red');
+      input.classList.add(`halo-${color}`);
+      setTimeout(() => input.classList.remove(`halo-${color}`), 600);
+    }
+
+    function render(fromArrow = false) {
       results.innerHTML = filtered.map((item, idx) => {
         const sel      = idx === selectedIdx ? ' selected' : '';
         const keyHtml  = highlightMatches(item.key,  input.value);
@@ -686,11 +702,20 @@
 
       // Scroll selected item into view after keyboard navigation
       const sel = results.querySelector('.item.selected');
-      if (sel) sel.scrollIntoView({ block: 'nearest' });
+      if (sel && fromArrow) sel.scrollIntoView({ block: 'nearest' });
     }
 
     function filter() {
       const query = input.value.trim();
+      if (query === TRIGGER) {
+        flashHalo('green');
+        input.value = '';
+        filtered = items;
+        selectedIdx = 0;
+        render();
+        openTypingTest();
+        return;
+      }
       filtered    = query
         ? items.filter(item => fuzzyMatch(item.key, query) || fuzzyMatch(item.desc, query))
         : items;
@@ -703,16 +728,18 @@
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        if (input.value.trim() === TRIGGER) { input.value = ''; filter(); openTypingTest(); return; }
-        if (filtered.length > 0) openItem(filtered[selectedIdx]);
+        const query = input.value.trim();
+        if (query === TRIGGER) { flashHalo('green'); input.value = ''; filter(); openTypingTest(); return; }
+        if (filtered.length > 0) { openItem(filtered[selectedIdx]); return; }
+        if (query.length > 0) flashHalo('red');
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         selectedIdx = Math.min(filtered.length - 1, selectedIdx + 1);
-        render();
+        render(true);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         selectedIdx = Math.max(0, selectedIdx - 1);
-        render();
+        render(true);
       }
     });
 
