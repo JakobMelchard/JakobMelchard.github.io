@@ -127,6 +127,7 @@
       color: var(--muted);
       letter-spacing: .2em;
       text-transform: uppercase;
+      text-align: center;
       z-index: 1;
     }
 
@@ -175,6 +176,7 @@
       max-width: 90vw;
       height: 280px;
       z-index: 1;
+      margin-top: .5rem;
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: rgba(139, 233, 253, 0.3) transparent;
@@ -200,25 +202,20 @@
       background: var(--surface);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--border);
+      border: 1px solid transparent;
       border-radius: 12px;
       padding: .75rem 1rem;
       text-decoration: none;
       color: var(--text);
       font-size: .9rem;
       cursor: pointer;
-      transition: border-color 0.2s ease, background 0.2s ease;
+      transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
       flex-shrink: 0;
     }
 
     .item:hover {
       background: var(--surface-hover);
       border-color: var(--border-hover);
-    }
-
-    .item.selected {
-      background: var(--selected);
-      border-color: var(--selected-border);
     }
 
     .item .label {
@@ -231,13 +228,21 @@
       color: var(--muted);
     }
 
-    .item.selected .label { color: var(--pink); }
-    .item.selected .desc  { color: rgba(255, 121, 198, 0.55); }
-
     .item[data-color="pink"] .label   { color: var(--pink); }
     .item[data-color="purple"] .label { color: var(--purple); }
     .item[data-color="cyan"] .label   { color: var(--cyan); }
     .item[data-color="green"] .label  { color: var(--green); }
+
+    .item[data-color="cyan"].selected    { background: var(--cyan);   border: 2px solid var(--cyan); }
+    .item[data-color="purple"].selected  { background: var(--purple); border: 2px solid var(--purple); }
+    .item[data-color="pink"].selected    { background: var(--pink);   border: 2px solid var(--pink); }
+    .item[data-color="green"].selected   { background: var(--green);  border: 2px solid var(--green); }
+
+    .item.selected .label,
+    .item.selected .desc,
+    .item.selected .match {
+      color: var(--bg-dark);
+    }
 
     .match {
       color: var(--yellow);
