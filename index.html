@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jakob Melchard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d0d0d;
+      --surface: #1a1a1a;
+      --border:  #2a2a2a;
+      --text:    #e0e0e0;
+      --muted:   #555;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+    }
+
+    h1 {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      width: 240px;
+    }
+
+    nav a {
+      display: flex;
+      justify-content: space-between; align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .75rem 1rem;
+      text-decoration: none;
+      color: var(--text);
+      font-size: .9rem;
+      transition: border-color .15s;
+    }
+
+    nav a:hover { border-color: #444; }
+
+    nav a span.label { font-weight: 500; }
+    nav a span.desc  { font-size: .75rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <h1>Jakob Melchard</h1>
+  <nav>
+    <a href="/cv">
+      <span class="label">cv</span>
+      <span class="desc">Curriculum Vitae</span>
+    </a>
+    <a href="/sh">
+      <span class="label">sh</span>
+      <span class="desc">Shell</span>
+    </a>
+    <a href="/health">
+      <span class="label">health</span>
+      <span class="desc">Status</span>
+    </a>
+  </nav>
+</body>
+</html>
