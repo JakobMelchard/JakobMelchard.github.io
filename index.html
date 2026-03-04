@@ -816,7 +816,7 @@
     ];
 
     let filtered = items;
-    let selectedIdx = 0;
+    let selectedIdx = -1;
 
     const input          = document.getElementById('search-input');
     const results        = document.getElementById('results');
@@ -933,7 +933,7 @@
         e.preventDefault();
         const query = input.value.trim();
         if (query === TRIGGER) { flashHalo('green'); input.value = ''; filter(); openTypingTest(); return; }
-        if (filtered.length > 0) { openItem(filtered[selectedIdx]); return; }
+        if (filtered.length > 0 && selectedIdx >= 0) { openItem(filtered[selectedIdx]); return; }
         if (query.length > 0) { flashHalo('red'); shakeScreen(); }
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -1178,7 +1178,7 @@
       }
     });
 
-    $tw.addEventListener('click',()=>$tg.focus());
+    $tw.addEventListener('mousedown', (e) => { e.preventDefault(); $tg.focus(); });
     $tg.addEventListener('blur',()=>{ if(!tdone) $tw.classList.add('blurred'); });
     $tg.addEventListener('focus',()=>{ if(!tdone) $tw.classList.remove('blurred'); });
     document.getElementById('typing-r-again').addEventListener('click',resetTyping);
