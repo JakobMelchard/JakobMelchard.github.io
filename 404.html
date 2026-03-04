@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Page Not Found | Jakob Melchard</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://jakob.melchard.org/404.html">
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0a0a0a;
+      --bg-dark:      #000000;
+      --surface:      rgba(0, 0, 0, 0.4);
+      --surface-hover: rgba(0, 0, 0, 0.6);
+      --border:       rgba(100, 100, 100, 0.15);
+      --border-hover: rgba(139, 233, 253, 0.3);
+      --text:         #e0e0e0;
+      --muted:        #6272a4;
+      --cyan:         #8be9fd;
+      --purple:       #bd93f9;
+      --pink:         #ff79c6;
+      --yellow:       #f1fa8c;
+      --green:        #50fa7b;
+      --red:          #ff5555;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg) 100%);
+      color: var(--text);
+      font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .code {
+      font-size: 6rem;
+      font-weight: 300;
+      color: var(--purple);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      font-variant: small-caps;
+      letter-spacing: 0.2em;
+    }
+
+    .home-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1.25rem;
+      text-decoration: none;
+      color: var(--cyan);
+      font-size: 0.9rem;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .home-link:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="code">404</p>
+    <p class="subtitle">page not found</p>
+    <a href="/" class="home-link">→ go home</a>
+  </main>
+</body>
+</html>
