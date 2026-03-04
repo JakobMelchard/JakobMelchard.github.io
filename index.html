@@ -19,7 +19,9 @@
       --cyan:         #8be9fd;
       --purple:       #bd93f9;
       --pink:         #ff79c6;
-      --selected:     rgba(139, 233, 253, 0.08);
+      --yellow:       #f1fa8c;
+      --selected:     rgba(255, 121, 198, 0.12);
+      --selected-border: rgba(255, 121, 198, 0.4);
     }
 
     body {
@@ -141,7 +143,7 @@
 
     .item.selected {
       background: var(--selected);
-      border-color: var(--cyan);
+      border-color: var(--selected-border);
     }
 
     .item .label {
@@ -160,7 +162,7 @@
     .item[data-color="green"] .label  { color: #50fa7b; }
 
     .match {
-      color: var(--cyan);
+      color: var(--yellow);
       font-weight: 600;
     }
 
