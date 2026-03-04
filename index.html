@@ -480,12 +480,41 @@
       color: var(--muted);
       letter-spacing: 0.1em;
     }
+
+    /* notification toast */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(80, 250, 123, 0.15);
+      border: 1px solid rgba(80, 250, 123, 0.3);
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      color: #50fa7b;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      z-index: 2000;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 <body>
   <h1>Jakob Melchard</h1>
   <input type="text" id="search-input" placeholder="Type to search..." autocomplete="off" autofocus>
   <div id="results"></div>
+
+  <!-- Toast notification -->
+  <div id="toast"></div>
 
   <!-- Typing Test Modal -->
   <div id="typing-modal">
@@ -535,11 +564,11 @@
 
   <script>
     const items = [
-      { key: 'cv',      desc: 'Curriculum Vitae', url: '/cv',                               color: 'pink'   },
       { key: 'github',  desc: 'GitHub Profile',   url: 'https://github.com/JakobMelchard',  color: 'purple' },
-      { key: 'contact', desc: 'Email',             url: 'mailto:jakob@melchard.org',         color: 'green'  },
-      { key: 'sh',      desc: 'Shell',             url: '/sh',                               color: 'cyan'   },
-      { key: 'health',  desc: 'Status',            url: '/health',                           color: 'purple' },
+      { key: 'cv',      desc: 'Curriculum Vitae', url: '/cv',                               color: 'pink'   },
+      { key: 'contact', desc: 'Email',            email: 'jakob@melchard.org',              color: 'green'  },
+      { key: 'health',  desc: 'Status',           url: '/health',                           color: 'purple' },
+      { key: 'sh',      desc: 'Shell',            url: '/sh',                               color: 'cyan'   },
     ];
 
     let filtered = items;
@@ -576,16 +605,25 @@
     }
 
     function openItem(item) {
-      if (item.url.startsWith('mailto:')) {
-        // Temporary anchor click is the most reliable cross-browser mailto trigger
-        const a = document.createElement('a');
-        a.href = item.url;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      } else {
+      if (item.email) {
+        // Copy email to clipboard
+        navigator.clipboard.writeText(item.email).then(() => {
+          showToast('contact address copied to clipboard');
+        }).catch(() => {
+          showToast('failed to copy email');
+        });
+      } else if (item.url) {
         window.location.href = item.url;
       }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
     }
 
     function render() {
@@ -593,7 +631,8 @@
         const sel      = idx === selectedIdx ? ' selected' : '';
         const keyHtml  = highlightMatches(item.key,  input.value);
         const descHtml = highlightMatches(item.desc, input.value);
-        return `<a href="${item.url}" class="item${sel}" data-idx="${idx}" data-color="${item.color}">
+        const href = item.url || '#';
+        return `<a href="${href}" class="item${sel}" data-idx="${idx}" data-color="${item.color}">
           <span class="label">${keyHtml}</span>
           <span class="desc">${descHtml}</span>
         </a>`;
@@ -813,17 +852,20 @@
     }
 
     function onTypingKey(e) {
+      // Toggle modal with ctrl+e
+      if(e.ctrlKey && e.key === 'e') {
+        e.preventDefault();
+        closeTypingTest();
+        return;
+      }
+      
       if(e.key==='Tab'){
         e.preventDefault();
         tidx=(tidx+1)%TIMES.length; DUR=TIMES[tidx];
         $tmt.textContent=DUR; resetTyping(); return;
       }
       if(e.key==='Escape'){
-        if(tdone) {
-          closeTypingTest();
-        } else {
-          resetTyping();
-        }
+        closeTypingTest();
         return;
       }
       if(tdone) return;
@@ -910,11 +952,20 @@
     }
 
     document.addEventListener('keydown', (e) => {
+      // Global ctrl+e toggle
+      if(e.ctrlKey && e.key === 'e') {
+        e.preventDefault();
+        if($tm.classList.contains('show')) {
+          closeTypingTest();
+        } else {
+          openTypingTest();
+        }
+        return;
+      }
+
+      // If modal is open, handle typing test keys
       if($tm.classList.contains('show')) {
         onTypingKey(e);
-      } else if(e.ctrlKey && e.key === 'e') {
-        e.preventDefault();
-        openTypingTest();
       }
     });
 
