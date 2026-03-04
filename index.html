@@ -20,8 +20,10 @@
       --purple:       #bd93f9;
       --pink:         #ff79c6;
       --yellow:       #f1fa8c;
+      --green:        #50fa7b;
+      --red:          #ff5555;
       --selected:     rgba(255, 121, 198, 0.12);
-      --selected-border: rgba(255, 121, 198, 0.4);
+      --selected-border: rgba(255, 121, 198, 0.40);
     }
 
     body {
@@ -74,11 +76,11 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: .75rem 1rem;
-      color: var(--text);
+      color: var(--pink);
       font-family: inherit;
       font-size: .9rem;
       outline: none;
-      transition: all .3s ease;
+      transition: border-color 0.3s ease, background 0.3s ease;
       z-index: 1;
     }
 
