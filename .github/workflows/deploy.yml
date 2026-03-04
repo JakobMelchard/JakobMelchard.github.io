@@ -19,7 +19,7 @@ jobs:
 
   deploy:
     needs: upload
-    uses: JakobMelchard/.github/.github/workflows/reusable-pages-deploy.yml@v1
+    uses: JakobMelchard/.github/.github/workflows/pages.yml@main
     permissions:
       pages: write
       id-token: write
