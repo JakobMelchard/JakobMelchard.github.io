@@ -279,7 +279,7 @@
     #typing-words {
       font-size: 1.28rem;
       line-height: 2.75rem;
-      color: rgba(248,248,242,0.10);
+      color: rgba(248,248,242,0.22);
       letter-spacing: 0.025em;
       height: calc(2.75rem * 4);
       overflow: hidden;
@@ -565,12 +565,14 @@
     }
 
     #typing-r-close {
-      margin-left: auto;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
       background: none;
       border: 1px solid rgba(255, 85, 85, 0.3);
       color: var(--red);
       font-family: inherit;
-      font-size: 0.9rem;
+      font-size: 1rem;
       line-height: 1;
       padding: 0.18rem 0.52rem;
       border-radius: 4px;
@@ -652,6 +654,7 @@
       </div>
 
       <div id="typing-overlay">
+        <button id="typing-r-close" title="Close">×</button>
         <div id="typing-card">
           <div class="typing-wpm-row">
             <div id="typing-r-wpm">0</div>
@@ -667,7 +670,6 @@
           <div class="typing-card-footer">
             <button id="typing-r-again">restart</button>
             <span class="typing-card-hint"><kbd>tab</kbd> next time &nbsp;·&nbsp; <kbd>esc</kbd> close</span>
-            <button id="typing-r-close" title="Close">×</button>
           </div>
         </div>
       </div>
@@ -1009,7 +1011,6 @@
         'ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
       if(skip.includes(e.key)||e.key.startsWith('F')) return;
 
-      if(!tstarted) startTimer();
       const word=twords[tcw];
 
       if(e.key==='Backspace'){
@@ -1034,6 +1035,7 @@
       }
 
       if(e.key.length!==1) return;
+      if(!tstarted) startTimer();
       if(ttyped.length<word.length+10){
         const i=ttyped.length; ttyped+=e.key; ttotT++;
         if(i<word.length&&e.key===word[i]) ttotC++;
@@ -1076,12 +1078,14 @@
 
     function openTypingTest() {
       $tm.classList.add('show');
+      syncModalToViewport();
       resetTyping();
       setTimeout(()=>$tg.focus(),100);
     }
 
     function closeTypingTest() {
       $tm.classList.remove('show');
+      ['top','left','width','height'].forEach(p => $tm.style.removeProperty(p));
       resetTyping();
       input.focus();
     }
@@ -1108,6 +1112,20 @@
     document.getElementById('typing-r-again').addEventListener('click',resetTyping);
     document.getElementById('typing-close').addEventListener('click',closeTypingTest);
     document.getElementById('typing-r-close').addEventListener('click',closeTypingTest);
+
+    // Keep typing modal centered within the visual viewport (e.g. when mobile keyboard appears)
+    function syncModalToViewport() {
+      if (!window.visualViewport) return;
+      const vv = window.visualViewport;
+      $tm.style.top    = vv.offsetTop  + 'px';
+      $tm.style.left   = vv.offsetLeft + 'px';
+      $tm.style.width  = vv.width  + 'px';
+      $tm.style.height = vv.height + 'px';
+    }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', () => { if ($tm.classList.contains('show')) syncModalToViewport(); });
+      window.visualViewport.addEventListener('scroll', () => { if ($tm.classList.contains('show')) syncModalToViewport(); });
+    }
   </script>
 </body>
 </html>
