@@ -13,18 +13,21 @@
       --border:  #2a2a2a;
       --text:    #e0e0e0;
       --muted:   #555;
+      --cyan:    #00d9ff;
+      --selected: #2a2a2a;
     }
 
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 3rem;
+      gap: 2rem;
+      padding: 2rem;
     }
 
     h1 {
@@ -35,16 +38,41 @@
       text-transform: uppercase;
     }
 
-    nav {
+    #search-input {
+      width: 480px;
+      max-width: 90vw;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .75rem 1rem;
+      color: var(--text);
+      font-family: inherit;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    #search-input:focus {
+      border-color: var(--cyan);
+    }
+
+    #search-input::placeholder {
+      color: var(--muted);
+    }
+
+    #results {
       display: flex;
       flex-direction: column;
       gap: .5rem;
-      width: 240px;
+      width: 480px;
+      max-width: 90vw;
+      min-height: 200px;
     }
 
-    nav a {
+    .item {
       display: flex;
-      justify-content: space-between; align-items: center;
+      justify-content: space-between;
+      align-items: center;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -52,30 +80,138 @@
       text-decoration: none;
       color: var(--text);
       font-size: .9rem;
-      transition: border-color .15s;
+      cursor: pointer;
+      transition: all .15s;
     }
 
-    nav a:hover { border-color: #444; }
+    .item:hover {
+      border-color: #444;
+    }
 
-    nav a span.label { font-weight: 500; }
-    nav a span.desc  { font-size: .75rem; color: var(--muted); }
+    .item.selected {
+      background: var(--selected);
+      border-color: var(--cyan);
+    }
+
+    .item .label {
+      font-weight: 500;
+    }
+
+    .item .desc {
+      font-size: .75rem;
+      color: var(--muted);
+    }
+
+    .match {
+      color: var(--cyan);
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
   <h1>Jakob Melchard</h1>
-  <nav>
-    <a href="/cv">
-      <span class="label">cv</span>
-      <span class="desc">Curriculum Vitae</span>
-    </a>
-    <a href="/sh">
-      <span class="label">sh</span>
-      <span class="desc">Shell</span>
-    </a>
-    <a href="/health">
-      <span class="label">health</span>
-      <span class="desc">Status</span>
-    </a>
-  </nav>
+  <input type="text" id="search-input" placeholder="Type to search..." autocomplete="off" autofocus>
+  <div id="results"></div>
+
+  <script>
+    const items = [
+      { key: 'cv', desc: 'Curriculum Vitae', url: '/cv' },
+      { key: 'github', desc: 'GitHub Profile', url: 'https://github.com/JakobMelchard' },
+      { key: 'contact', desc: 'Email', url: 'mailto:jakob@melchard.org' },
+      { key: 'sh', desc: 'Shell', url: '/sh' },
+      { key: 'health', desc: 'Status', url: '/health' },
+    ];
+
+    let filtered = items;
+    let selectedIdx = 0;
+
+    const input = document.getElementById('search-input');
+    const results = document.getElementById('results');
+
+    function fuzzyMatch(str, query) {
+      let i = 0, j = 0;
+      str = str.toLowerCase();
+      query = query.toLowerCase();
+      while (i < str.length && j < query.length) {
+        if (str[i] === query[j]) j++;
+        i++;
+      }
+      return j === query.length;
+    }
+
+    function highlightMatches(str, query) {
+      if (!query) return str;
+      let result = '';
+      let qi = 0;
+      query = query.toLowerCase();
+      for (let i = 0; i < str.length; i++) {
+        if (qi < query.length && str[i].toLowerCase() === query[qi]) {
+          result += `<span class="match">${str[i]}</span>`;
+          qi++;
+        } else {
+          result += str[i];
+        }
+      }
+      return result;
+    }
+
+    function render() {
+      results.innerHTML = filtered.map((item, idx) => {
+        const sel = idx === selectedIdx ? ' selected' : '';
+        const keyHtml = highlightMatches(item.key, input.value);
+        const descHtml = highlightMatches(item.desc, input.value);
+        return `<div class="item${sel}" data-idx="${idx}">
+          <span class="label">${keyHtml}</span>
+          <span class="desc">${descHtml}</span>
+        </div>`;
+      }).join('');
+
+      // Add click handlers
+      document.querySelectorAll('.item').forEach(el => {
+        el.addEventListener('click', () => {
+          selectedIdx = parseInt(el.dataset.idx);
+          navigate();
+        });
+      });
+    }
+
+    function filter() {
+      const query = input.value.trim();
+      if (!query) {
+        filtered = items;
+      } else {
+        filtered = items.filter(item => 
+          fuzzyMatch(item.key, query) || fuzzyMatch(item.desc, query)
+        );
+      }
+      selectedIdx = 0;
+      render();
+    }
+
+    function navigate() {
+      if (filtered.length > 0) {
+        window.location.href = filtered[selectedIdx].url;
+      }
+    }
+
+    input.addEventListener('input', filter);
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        navigate();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIdx = Math.min(filtered.length - 1, selectedIdx + 1);
+        render();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIdx = Math.max(0, selectedIdx - 1);
+        render();
+      }
+    });
+
+    render();
+  </script>
 </body>
 </html>
