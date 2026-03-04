@@ -163,12 +163,373 @@
       color: var(--cyan);
       font-weight: 600;
     }
+
+    /* typing test modal */
+    #typing-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(22px) saturate(0.5);
+      -webkit-backdrop-filter: blur(22px) saturate(0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.32s ease;
+    }
+
+    #typing-modal.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #typing-container {
+      width: min(900px, 92vw);
+      background: rgba(12,12,12,0.94);
+      border: 1px solid rgba(189,147,249,0.14);
+      border-radius: 10px;
+      padding: 3rem;
+      transform: translateY(14px) scale(0.98);
+      transition: transform 0.32s cubic-bezier(.2,0,0,1), opacity 0.32s ease;
+      opacity: 0;
+    }
+
+    #typing-modal.show #typing-container {
+      transform: none;
+      opacity: 1;
+    }
+
+    /* typing test styles */
+    #typing-meta {
+      margin-bottom: 2.6rem;
+      font-size: 0.67rem;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      font-weight: 300;
+      display: flex;
+      gap: 1.2rem;
+      align-items: center;
+    }
+
+    #typing-meta .sep { color: rgba(248,248,242,0.10); }
+    #typing-meta-time { color: var(--purple); }
+
+    #typing-live {
+      display: flex;
+      gap: 2.2rem;
+      margin-bottom: 1.3rem;
+      font-size: 0.69rem;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    .typing-lv {
+      display: flex;
+      gap: 0.4em;
+      align-items: baseline;
+    }
+
+    .typing-lv-val { color: rgba(248,248,242,0.52); }
+    #typing-live-time { color: var(--cyan); }
+    #typing-live-time.urgent {
+      color: #ff5555;
+      animation: tp 0.5s ease infinite alternate;
+    }
+
+    @keyframes tp {
+      from { opacity: 1; }
+      to { opacity: 0.35; }
+    }
+
+    #typing-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    #typing-words {
+      font-size: 1.28rem;
+      line-height: 2.75rem;
+      color: rgba(248,248,242,0.10);
+      letter-spacing: 0.025em;
+      height: calc(2.75rem * 3);
+      overflow: hidden;
+      cursor: text;
+      user-select: none;
+      position: relative;
+      transition: filter 0.3s ease, opacity 0.3s ease;
+    }
+
+    #typing-words.blurred {
+      filter: blur(6px);
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    #typing-wi {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      transition: transform 0.14s cubic-bezier(.4,0,.2,1);
+    }
+
+    .typing-word {
+      display: inline-block;
+      margin-right: 0.4em;
+      position: relative;
+    }
+
+    .typing-letter {
+      position: relative;
+      display: inline-block;
+      transition: color 0.04s;
+    }
+
+    .typing-letter.correct { color: #50fa7b; }
+    .typing-letter.wrong {
+      color: #ff5555;
+      background: rgba(255,85,85,0.11);
+      border-radius: 2px;
+    }
+
+    .typing-word.err {
+      text-decoration: underline;
+      text-decoration-color: rgba(255,85,85,0.35);
+      text-underline-offset: 4px;
+    }
+
+    .typing-letter.cur::before {
+      content: '';
+      position: absolute;
+      left: -1.5px;
+      top: 12%;
+      height: 76%;
+      width: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      animation: blink 1s step-end infinite;
+    }
+
+    .typing-letter.cur-end::after {
+      content: '';
+      position: absolute;
+      right: -3px;
+      top: 12%;
+      height: 76%;
+      width: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    #typing-ghost {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+      width: 1px;
+      height: 1px;
+    }
+
+    #typing-hint {
+      margin-top: 1.5rem;
+      font-size: 0.61rem;
+      letter-spacing: 0.12em;
+      color: rgba(248,248,242,0.10);
+      display: flex;
+      gap: 1.8rem;
+    }
+
+    #typing-hint kbd {
+      font-family: inherit;
+      font-size: 0.58rem;
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.07);
+      padding: 0.12rem 0.38rem;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.025);
+    }
+
+    #typing-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.68);
+      backdrop-filter: blur(22px) saturate(0.5);
+      -webkit-backdrop-filter: blur(22px) saturate(0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.32s ease;
+      border-radius: 10px;
+    }
+
+    #typing-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #typing-card {
+      background: rgba(12,12,12,0.94);
+      border: 1px solid rgba(189,147,249,0.14);
+      border-radius: 10px;
+      padding: 3.2rem 4.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.9rem;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(189,147,249,0.04);
+      transform: translateY(14px) scale(0.98);
+      transition: transform 0.32s cubic-bezier(.2,0,0,1), opacity 0.32s ease;
+      opacity: 0;
+    }
+
+    #typing-overlay.show #typing-card {
+      transform: none;
+      opacity: 1;
+    }
+
+    .typing-wpm-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.7rem;
+    }
+
+    #typing-r-wpm {
+      font-size: 5.5rem;
+      font-weight: 300;
+      line-height: 1;
+      color: var(--purple);
+      letter-spacing: -0.03em;
+    }
+
+    .typing-wpm-lbl {
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .typing-stats {
+      display: flex;
+      gap: 2.8rem;
+    }
+
+    .typing-stat big {
+      display: block;
+      font-size: 1.85rem;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .typing-stat big.g { color: #50fa7b; }
+    .typing-stat big.r { color: #ff5555; }
+
+    .typing-stat small {
+      display: block;
+      font-size: 0.61rem;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      margin-top: 0.3rem;
+    }
+
+    .typing-divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .typing-card-footer {
+      display: flex;
+      align-items: center;
+      gap: 1.4rem;
+    }
+
+    #typing-r-again {
+      background: rgba(189,147,249,0.07);
+      border: 1px solid rgba(189,147,249,0.22);
+      font-family: inherit;
+      font-size: 0.69rem;
+      letter-spacing: 0.12em;
+      color: var(--purple);
+      padding: 0.52rem 1.3rem;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    #typing-r-again:hover {
+      background: rgba(189,147,249,0.14);
+      border-color: rgba(189,147,249,0.42);
+    }
+
+    .typing-card-hint {
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
   </style>
 </head>
 <body>
   <h1>Jakob Melchard</h1>
   <input type="text" id="search-input" placeholder="Type to search..." autocomplete="off" autofocus>
   <div id="results"></div>
+
+  <!-- Typing Test Modal -->
+  <div id="typing-modal">
+    <div id="typing-container">
+      <div id="typing-meta">
+        <span>type</span><span class="sep">·</span>
+        <span id="typing-meta-time">15</span>s
+      </div>
+
+      <div id="typing-live">
+        <div class="typing-lv">wpm <span class="typing-lv-val" id="typing-live-wpm">–</span></div>
+        <div class="typing-lv">acc <span class="typing-lv-val" id="typing-live-acc">–</span></div>
+        <div class="typing-lv">time <span class="typing-lv-val" id="typing-live-time">15</span></div>
+      </div>
+
+      <div id="typing-wrap">
+        <div id="typing-words"><div id="typing-wi"></div></div>
+        <input id="typing-ghost" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+
+      <div id="typing-hint">
+        <span><kbd>tab</kbd> cycle time</span>
+        <span><kbd>esc</kbd> close/reset</span>
+      </div>
+
+      <div id="typing-overlay">
+        <div id="typing-card">
+          <div class="typing-wpm-row">
+            <div id="typing-r-wpm">0</div>
+            <div class="typing-wpm-lbl">wpm</div>
+          </div>
+          <div class="typing-stats">
+            <div class="typing-stat"><big id="typing-r-raw">0</big><small>raw</small></div>
+            <div class="typing-stat"><big id="typing-r-acc">100%</big><small>acc</small></div>
+            <div class="typing-stat"><big id="typing-r-chars">0/0</big><small>chars</small></div>
+            <div class="typing-stat"><big id="typing-r-time">0s</big><small>time</small></div>
+          </div>
+          <div class="typing-divider"></div>
+          <div class="typing-card-footer">
+            <button id="typing-r-again">restart</button>
+            <span class="typing-card-hint"><kbd>tab</kbd> next time &nbsp;·&nbsp; <kbd>esc</kbd> close</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     const items = [
@@ -272,10 +633,293 @@
         e.preventDefault();
         selectedIdx = Math.max(0, selectedIdx - 1);
         render();
+      } else if (e.ctrlKey && e.key === 'e') {
+        e.preventDefault();
+        openTypingTest();
       }
     });
 
     render();
+
+    // ── Typing Test ──────────────────────────────────────────────────────────────
+    const W = [
+      "the","be","to","of","and","a","in","that","have","it","for","not","on","with",
+      "he","as","you","do","at","this","but","his","by","from","they","we","say","her",
+      "she","or","an","will","my","one","all","would","there","their","what","so","up",
+      "out","if","about","who","get","which","go","me","when","make","can","like","time",
+      "no","just","him","know","take","people","into","year","your","good","some","could",
+      "them","see","other","than","then","now","look","only","come","its","over","think",
+      "also","back","after","use","two","how","our","work","first","well","way","even",
+      "new","want","because","any","these","give","day","most","us","great","between",
+      "need","large","often","hold","turn","been","said","made","found","left","called",
+      "used","asked","felt","tried","came","went","gave","told","kept","let","began",
+      "run","set","put","open","move","live","play","point","hear","write","read","stand",
+      "lose","pay","meet","include","continue","learn","change","lead","watch","follow",
+      "stop","create","speak","allow","spend","grow","walk","win","offer","remember",
+      "love","consider","appear","buy","wait","serve","send","expect","build","stay",
+      "fall","cut","reach","remain","suggest","raise","pass","sell","require","report",
+      "decide","pull","break","plan","already","although","another","anything","around",
+      "become","before","both","business","case","children","city","close","country",
+      "course","different","down","each","early","end","enough","every","example","face",
+      "fact","family","few","four","government","group","hand","help","home","house",
+      "however","important","keep","kind","large","last","late","life","little","long",
+      "man","many","matter","might","money","more","morning","much","must","name","never",
+      "next","night","nothing","number","often","old","once","own","part","past","place",
+      "possible","power","problem","public","question","real","right","room","same",
+      "second","seem","side","small","social","something","still","such","system","thing",
+      "three","through","today","together","too","took","toward","under","until","upon",
+      "very","while","whole","within","without","word","world","young","able","above",
+      "across","age","air","almost","along","always","among","away","behind","below",
+      "best","better","beyond","black","blue","body","book","brought","care","carry",
+      "certain","clear","common","cost","dead","drive","during","east","either","else",
+      "entire","ever","exist","experience","field","figure","final","five","force","free",
+      "front","full","future","general","gone","half","hard","heavy","human","idea",
+      "instead","itself","knowledge","known","less","likely","line","local","low","main",
+      "middle","mind","national","nature","near","north","note","notice","object","order",
+      "outside","page","particular","perfect","perhaps","period","present","process",
+      "produce","program","provide","quite","rather","ready","receive","recent","region",
+      "result","return","role","safe","school","sense","short","since","single","size",
+      "sometimes","soon","south","special","specific","start","state","step","story",
+      "strong","student","study","subject","support","sure","surface","table","tend",
+      "term","theory","thought","thousand","throughout","trade","type","understand",
+      "unless","usually","value","various","view","voice","west","whether","white","wide",
+      "wind","write","wrong","yes","yet","zero","system","network","server","client",
+      "data","file","code","error","debug","test","build","deploy","config","token",
+      "cache","queue","event","state","class","type","value","index","array","stack",
+      "block","node","tree","list","hash","map","key","port","host","path","base","core",
+      "sync","async","fetch","parse","merge","split","sort","filter","reduce","apply",
+      "next","prev","init","load","save","emit","drop","add","remove","clear","reset"
+    ];
+
+    const SYM = [
+      '!','@','#','$','%','^','&','*','(',')','_','+','-','=',
+      '[',']','{','}','|',';',':',',','.','<','>','/','?','`','~','\\'
+    ];
+
+    const PUNCT = [[',',18],['.',12],['!',4],['?',4],[':',4],[';',3],["'",3],['"',2],['-',3]];
+
+    function rp() {
+      let r = Math.random() * PUNCT.reduce((s,[,w])=>s+w,0);
+      for(const [p,w] of PUNCT){ r-=w; if(r<=0) return p; }
+      return ',';
+    }
+
+    function rw() { return W[Math.floor(Math.random()*W.length)]; }
+    function rs() { return SYM[Math.floor(Math.random()*SYM.length)]; }
+
+    function genWords(n=110) {
+      const out = [];
+      for(let i=0;i<n;i++){
+        const roll = Math.random();
+        let word;
+        if(roll < 0.08) {
+          word = rs();
+        } else if(roll < 0.16) {
+          word = rs() + rw();
+        } else if(roll < 0.22) {
+          word = rw() + rs();
+        } else {
+          word = rw();
+          if(Math.random() < 0.22) word += rp();
+        }
+        if(i>0 && /[.!?]$/.test(out[i-1])) word = word[0].toUpperCase()+word.slice(1);
+        out.push(word);
+      }
+      return out;
+    }
+
+    const TIMES = [15,30,60];
+    let tidx = 0, DUR = 15;
+    let twords=[], twEls=[], tlEls=[], tcw=0, tcl=0, ttyped='';
+    let tstarted=false, tdone=false, tt0=null, ttick=null, ttLeft=DUR;
+    let ttotC=0, ttotT=0, tlastRow=0;
+
+    const $tm = document.getElementById('typing-modal');
+    const $tw = document.getElementById('typing-words');
+    const $twi = document.getElementById('typing-wi');
+    const $tg = document.getElementById('typing-ghost');
+    const $tov = document.getElementById('typing-overlay');
+    const $tlw = document.getElementById('typing-live-wpm');
+    const $tla = document.getElementById('typing-live-acc');
+    const $tlt = document.getElementById('typing-live-time');
+    const $tmt = document.getElementById('typing-meta-time');
+    const $trw = document.getElementById('typing-r-wpm');
+    const $trr = document.getElementById('typing-r-raw');
+    const $tra = document.getElementById('typing-r-acc');
+    const $trc = document.getElementById('typing-r-chars');
+    const $trti = document.getElementById('typing-r-time');
+
+    function buildTyping() {
+      twords=genWords(120); $twi.innerHTML=''; twEls=[]; tlEls=[];
+      twords.forEach(w=>{
+        const we=document.createElement('span'); we.className='typing-word';
+        const ls=[];
+        for(const ch of w){
+          const le=document.createElement('span'); le.className='typing-letter'; le.textContent=ch;
+          we.appendChild(le); ls.push(le);
+        }
+        $twi.appendChild(we); $twi.appendChild(document.createTextNode('\u00a0'));
+        twEls.push(we); tlEls.push(ls);
+      });
+    }
+
+    function extendTyping() {
+      genWords(50).forEach(w=>{
+        twords.push(w);
+        const we=document.createElement('span'); we.className='typing-word';
+        const ls=[];
+        for(const ch of w){
+          const le=document.createElement('span'); le.className='typing-letter'; le.textContent=ch;
+          we.appendChild(le); ls.push(le);
+        }
+        $twi.appendChild(we); $twi.appendChild(document.createTextNode('\u00a0'));
+        twEls.push(we); tlEls.push(ls);
+      });
+    }
+
+    function clrCur() { document.querySelectorAll('.cur,.cur-end').forEach(e=>e.classList.remove('cur','cur-end')); }
+    function putCur() {
+      clrCur(); if(tdone) return;
+      const ls=tlEls[tcw]; if(!ls) return;
+      if(tcl<ls.length) ls[tcl].classList.add('cur');
+      else ls[ls.length-1].classList.add('cur-end');
+    }
+
+    const RH = 2.75*16;
+    function scrollTyping() {
+      if(!twEls[tcw]) return;
+      const row=Math.floor(twEls[tcw].offsetTop/RH);
+      if(row>1&&row!==tlastRow){ tlastRow=row; $twi.style.transform=`translateY(-${(row-1)*RH}px)`; }
+    }
+
+    function startTimer() {
+      if(tstarted) return; tstarted=true; tt0=Date.now();
+      ttick=setInterval(()=>{
+        ttLeft=DUR-Math.floor((Date.now()-tt0)/1000);
+        $tlt.textContent=Math.max(0,ttLeft);
+        $tlt.classList.toggle('urgent',ttLeft<=5);
+        liveStat();
+        if(ttLeft<=0) endTest();
+      },100);
+    }
+
+    function liveStat() {
+      if(!tt0) return;
+      const m=(Date.now()-tt0)/60000;
+      $tlw.textContent=m>0?Math.round(ttotC/5/m):0;
+      $tla.textContent=(ttotT>0?Math.round(ttotC/ttotT*100):100)+'%';
+    }
+
+    function onTypingKey(e) {
+      if(e.key==='Tab'){
+        e.preventDefault();
+        tidx=(tidx+1)%TIMES.length; DUR=TIMES[tidx];
+        $tmt.textContent=DUR; resetTyping(); return;
+      }
+      if(e.key==='Escape'){
+        if(tdone) {
+          closeTypingTest();
+        } else {
+          resetTyping();
+        }
+        return;
+      }
+      if(tdone) return;
+
+      const skip=['Shift','Control','Alt','Meta','CapsLock',
+        'ArrowLeft','ArrowRight','ArrowUp','ArrowDown'];
+      if(skip.includes(e.key)||e.key.startsWith('F')) return;
+
+      if(!tstarted) startTimer();
+      const word=twords[tcw];
+
+      if(e.key==='Backspace'){
+        if(ttyped.length>0){
+          ttyped=ttyped.slice(0,-1); tcl=Math.min(ttyped.length,word.length);
+          renderWord(tcw,ttyped); putCur();
+        } else if(tcw>0&&twEls[tcw-1].classList.contains('err')){
+          tcw--; ttyped=''; tcl=0; renderWord(tcw,ttyped); putCur(); scrollTyping();
+        }
+        return;
+      }
+
+      if(e.key===' '){
+        e.preventDefault(); if(!ttyped.length) return;
+        let c=0;
+        for(let i=0;i<Math.min(word.length,ttyped.length);i++) if(ttyped[i]===word[i]) c++;
+        ttotC+=c+1; ttotT+=ttyped.length+1;
+        if(ttyped!==word) twEls[tcw].classList.add('err');
+        tcw++; ttyped=''; tcl=0;
+        if(tcw>=twords.length-20) extendTyping();
+        renderWord(tcw,''); putCur(); scrollTyping(); return;
+      }
+
+      if(e.key.length!==1) return;
+      if(ttyped.length<word.length+10){
+        const i=ttyped.length; ttyped+=e.key; ttotT++;
+        if(i<word.length&&e.key===word[i]) ttotC++;
+        tcl=Math.min(ttyped.length,word.length);
+        renderWord(tcw,ttyped); putCur();
+      }
+    }
+
+    function renderWord(wi,t) {
+      const ls=tlEls[wi],word=twords[wi]; if(!ls) return;
+      ls.forEach((el,i)=>{
+        el.classList.remove('correct','wrong','cur','cur-end');
+        if(i<t.length) el.classList.add(t[i]===word[i]?'correct':'wrong');
+      });
+      twEls[wi].classList.remove('err');
+    }
+
+    function endTest() {
+      clearInterval(ttick); tdone=true; clrCur();
+      const el=(Date.now()-tt0)/1000, m=el/60;
+      const wpm=Math.round(ttotC/5/m), raw=Math.round(ttotT/5/m);
+      const acc=ttotT>0?Math.round(ttotC/ttotT*100):100;
+      $trw.textContent=wpm; $trr.textContent=raw;
+      $tra.textContent=acc+'%';
+      $tra.className=acc>=95?'g':acc>=80?'':'r';
+      $trc.textContent=`${ttotC}/${ttotT}`; $trti.textContent=Math.round(el)+'s';
+      $tw.classList.add('blurred'); $tov.classList.add('show');
+    }
+
+    function resetTyping() {
+      clearInterval(ttick);
+      tstarted=tdone=false; tt0=null; ttLeft=DUR;
+      ttotC=ttotT=tcw=tcl=tlastRow=0; ttyped='';
+      $twi.style.transform='';
+      $tlw.textContent='–'; $tla.textContent='–'; $tlt.textContent=DUR;
+      $tlt.classList.remove('urgent');
+      $tw.classList.remove('blurred'); $tov.classList.remove('show');
+      buildTyping(); putCur(); $tg.focus();
+    }
+
+    function openTypingTest() {
+      $tm.classList.add('show');
+      resetTyping();
+      setTimeout(()=>$tg.focus(),100);
+    }
+
+    function closeTypingTest() {
+      $tm.classList.remove('show');
+      resetTyping();
+      input.focus();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if($tm.classList.contains('show')) {
+        onTypingKey(e);
+      } else if(e.ctrlKey && e.key === 'e') {
+        e.preventDefault();
+        openTypingTest();
+      }
+    });
+
+    $tw.addEventListener('click',()=>$tg.focus());
+    $tg.addEventListener('blur',()=>{ if(!tdone) $tw.classList.add('blurred'); });
+    $tg.addEventListener('focus',()=>{ if(!tdone) $tw.classList.remove('blurred'); });
+    document.getElementById('typing-r-again').addEventListener('click',resetTyping);
   </script>
 </body>
 </html>
