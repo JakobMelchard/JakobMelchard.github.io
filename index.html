@@ -234,11 +234,16 @@
         </a>`;
       }).join('');
 
-      // Add click handlers to prevent default and navigate
       document.querySelectorAll('.item').forEach(el => {
         el.addEventListener('click', (e) => {
+          const idx = parseInt(el.dataset.idx);
+          const item = filtered[idx];
+          if (item.url.startsWith('mailto:')) {
+            // Let the browser handle mailto naturally via the <a href>
+            return;
+          }
           e.preventDefault();
-          selectedIdx = parseInt(el.dataset.idx);
+          selectedIdx = idx;
           navigate();
         });
       });
@@ -249,7 +254,7 @@
       if (!query) {
         filtered = items;
       } else {
-        filtered = items.filter(item => 
+        filtered = items.filter(item =>
           fuzzyMatch(item.key, query) || fuzzyMatch(item.desc, query)
         );
       }
@@ -261,7 +266,7 @@
       if (filtered.length > 0) {
         const item = filtered[selectedIdx];
         if (item.url.startsWith('mailto:')) {
-          window.location.href = item.url;
+          window.open(item.url);
         } else {
           window.location.href = item.url;
         }
