@@ -74,19 +74,6 @@
       letter-spacing: .2em;
       text-transform: uppercase;
       z-index: 1;
-      cursor: pointer;
-    }
-
-    h1:focus-visible {
-      outline: 1px solid rgba(139, 233, 253, 0.5);
-      outline-offset: 4px;
-      border-radius: 2px;
-    }
-
-    h1 .type-hint {
-      font-size: 0.75em;
-      opacity: 0.35;
-      letter-spacing: 0.12em;
     }
 
     #search-input {
@@ -534,45 +521,12 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* testme Easter-egg swipe pill */
-    #testme-swipe {
-      width: 480px;
-      max-width: 90vw;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.6rem 1rem;
-      background: var(--surface);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--muted);
-      font-size: 0.69rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      z-index: 1;
-      opacity: 0;
-      transform: translateY(8px);
-      pointer-events: none;
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      user-select: none;
-      cursor: pointer;
-    }
-
-    #testme-swipe.show {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
   </style>
 </head>
 <body>
-  <h1 tabindex="0">Jakob Melchard <span class="type-hint">· type</span></h1>
+  <h1>Jakob Melchard</h1>
   <input type="text" id="search-input" placeholder="Type to search..." autocomplete="off" autofocus>
   <div id="results"></div>
-  <div id="testme-swipe">↑ &nbsp; type</div>
 
   <!-- Toast notification -->
   <div id="toast" role="status" aria-live="polite"></div>
@@ -623,8 +577,23 @@
     </div>
   </div>
 
-  <script src="words.js"></script>
   <script>
+    // ── Typing Test Config ─────────────────────────────────────────────────────
+    const TRIGGER   = '420';        // type this + Enter to open the typing test
+    const SYM       = ['!','@','#','$','%','^','&','*','(',')','_','+','-','=','[',']','{','}','|',';',':',',','.','<','>','/','?','`','~','\\'];
+    const PUNCT     = [[',',18],['.', 12],['!',4],['?',4],[':',4],[';',3],["'",3],['"',2],['-',3]];
+    const TIMES     = [15, 30, 60]; // available test durations in seconds
+    const SYM_RATE  = 0.08;         // chance a slot is a bare symbol
+    const SYM_PRE   = 0.16;         // cumulative threshold for symbol-prefixed word
+    const SYM_SUF   = 0.22;         // cumulative threshold for symbol-suffixed word
+    const PUNCT_ADD = 0.22;         // chance a plain word gets trailing punctuation
+
+    let WORDS = [];
+    fetch('words.txt')
+      .then(r => r.text())
+      .then(t => { WORDS = t.trim().split('\n').map(w => w.trim()).filter(Boolean); })
+      .catch(err => console.error('Failed to load words.txt:', err));
+
     const items = [
       { key: 'github',  desc: 'GitHub Profile',   url: 'https://github.com/JakobMelchard',  color: 'cyan'   },
       { key: 'cv',      desc: 'Curriculum Vitae', url: '/cv',                               color: 'purple' },
@@ -637,9 +606,7 @@
 
     const input          = document.getElementById('search-input');
     const results        = document.getElementById('results');
-    const $h1            = /** @type {HTMLHeadingElement} */ (document.querySelector('h1'));
     const $toast         = /** @type {HTMLDivElement} */ (document.getElementById('toast'));
-    const $testmeSwipe   = /** @type {HTMLDivElement} */ (document.getElementById('testme-swipe'));
 
     function fuzzyMatch(str, query) {
       let i = 0, j = 0;
@@ -729,7 +696,6 @@
         : items;
       selectedIdx = 0;
       render();
-      $testmeSwipe.classList.toggle('show', query.toLowerCase() === 'testme');
     }
 
     input.addEventListener('input', filter);
@@ -737,6 +703,7 @@
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
+        if (input.value.trim() === TRIGGER) { input.value = ''; filter(); openTypingTest(); return; }
         if (filtered.length > 0) openItem(filtered[selectedIdx]);
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -752,8 +719,6 @@
     render();
 
     // ── Typing Test ──────────────────────────────────────────────────────────────
-    // Word pool, symbols, and punctuation weights are defined in words.js
-    // (loaded before this script) as WORDS, SYM, and PUNCT.
 
     function rp() {
       let r = Math.random() * PUNCT.reduce((s,[,w])=>s+w,0);
@@ -769,15 +734,15 @@
       for(let i=0;i<n;i++){
         const roll = Math.random();
         let word;
-        if(roll < 0.08) {
+        if(roll < SYM_RATE) {
           word = rs();
-        } else if(roll < 0.16) {
+        } else if(roll < SYM_PRE) {
           word = rs() + rw();
-        } else if(roll < 0.22) {
+        } else if(roll < SYM_SUF) {
           word = rw() + rs();
         } else {
           word = rw();
-          if(Math.random() < 0.22) word += rp();
+          if(Math.random() < PUNCT_ADD) word += rp();
         }
         if(i>0 && /[.!?]$/.test(out[i-1])) word = word[0].toUpperCase()+word.slice(1);
         out.push(word);
@@ -785,8 +750,7 @@
       return out;
     }
 
-    const TIMES = [15,30,60];
-    let tidx = 0, DUR = 15;
+    let tidx = 0, DUR = TIMES[0];
     let twords=[], twEls=[], tlEls=[], tcw=0, tcl=0, ttyped='';
     let tstarted=false, tdone=false, tt0=null, ttick=null, ttLeft=DUR;
     let ttotC=0, ttotT=0, tlastRow=0;
@@ -986,56 +950,6 @@
     $tg.addEventListener('blur',()=>{ if(!tdone) $tw.classList.add('blurred'); });
     $tg.addEventListener('focus',()=>{ if(!tdone) $tw.classList.remove('blurred'); });
     document.getElementById('typing-r-again').addEventListener('click',resetTyping);
-
-    // ── Mobile gesture triggers ────────────────────────────────────────────────────
-
-    // 1. Tap the h1 label to open the typing test
-    $h1.addEventListener('click', openTypingTest);
-    $h1.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); openTypingTest(); } });
-
-    // 2. Long-press anywhere on the page background (touch-only, ~400 ms, no movement)
-    /** @type {ReturnType<typeof setTimeout>|null} */
-    let longPressTimer = null;
-    /** @type {number} */ let lpX = 0;
-    /** @type {number} */ let lpY = 0;
-
-    /** @type {number} Duration in ms before a held touch counts as a long-press. */
-    const LONG_PRESS_MS   = 400;
-    /** @type {number} Max pointer movement in px before cancelling a long-press. */
-    const LONG_PRESS_SLOP = 10;
-
-    document.addEventListener('pointerdown', (e) => {
-      if (e.pointerType !== 'touch') return;
-      if (e.target.closest('a, button, input, #typing-modal, #testme-swipe, #results')) return;
-      lpX = e.clientX; lpY = e.clientY;
-      longPressTimer = setTimeout(() => { longPressTimer = null; openTypingTest(); }, LONG_PRESS_MS);
-    });
-    document.addEventListener('pointermove', (e) => {
-      if (!longPressTimer) return;
-      if (Math.hypot(e.clientX - lpX, e.clientY - lpY) > LONG_PRESS_SLOP) {
-        clearTimeout(longPressTimer); longPressTimer = null;
-      }
-    });
-    ['pointerup', 'pointercancel'].forEach(evt =>
-      document.addEventListener(evt, () => { if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; } })
-    );
-
-    // 3. Swipe up from inside the results list
-    /** @type {number} */ let resultsSwipeY = 0;
-    results.addEventListener('touchstart', (e) => { resultsSwipeY = e.touches[0].clientY; }, { passive: true });
-    results.addEventListener('touchend', (e) => {
-      if (resultsSwipeY - e.changedTouches[0].clientY > 80) openTypingTest();
-    }, { passive: true });
-
-    // 4. "testme" Easter-egg pill — swipe up or tap to open
-    /** @type {number} */ let testmeSwipeY = 0;
-    $testmeSwipe.addEventListener('touchstart', (e) => { testmeSwipeY = e.touches[0].clientY; }, { passive: true });
-    $testmeSwipe.addEventListener('touchend', (e) => {
-      if (testmeSwipeY - e.changedTouches[0].clientY > 40) {
-        input.value = ''; filter(); openTypingTest();
-      }
-    }, { passive: true });
-    $testmeSwipe.addEventListener('click', () => { input.value = ''; filter(); openTypingTest(); });
   </script>
 </body>
 </html>
