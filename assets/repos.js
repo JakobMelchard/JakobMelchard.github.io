@@ -31,7 +31,6 @@ fetch(`${GH}/users/${USER}/repos?sort=updated&per_page=100&type=owner`)
       .sort((a, b) => a.name.localeCompare(b.name));
     const input = document.getElementById('filter');
     input.addEventListener('input', () => render(input.value));
-    input.placeholder = `/${allRepos.length} — filter`;
     render('');
   })
   .catch(() => {
