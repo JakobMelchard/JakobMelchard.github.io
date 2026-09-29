@@ -1,12 +1,13 @@
+/* colours and font come from assets/tokens.css (org design tokens, vendored by config-sync; do not edit it) */
 * { box-sizing: border-box }
 body {
   margin: 0;
   min-height: 100vh;
-  background: #000;
-  color: #eef2f7;
-  font: 16px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.55 var(--font);
 }
-a { color: #9ee7ff; text-decoration: none }
+a { color: var(--link); text-decoration: none }
 a:hover { text-decoration: underline }
 .shell {
   width: min(780px, calc(100% - 32px));
@@ -14,4 +15,4 @@ a:hover { text-decoration: underline }
   padding: 7vh 0;
 }
 .foot-links { margin-top: 24px; font-size: .85rem; text-align: center }
-.foot-links a + a::before { content: "\00B7"; margin: 0 .5em; color: #9aa4b2 }
+.foot-links a + a::before { content: "\00B7"; margin: 0 .5em; color: var(--muted) }
