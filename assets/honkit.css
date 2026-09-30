@@ -1,0 +1,235 @@
+/* HonKit on the org design tokens. Load after tokens.css (dark only, mono).
+   Books import it: docs/dark.css = @import of tokens.css and this file. */
+
+:root {
+  color-scheme: dark;
+}
+
+/* ── layout shell ─────────────────────────────────────────────── */
+body,
+.book,
+.book-body,
+.book-body .body-inner,
+.book-body .page-wrapper .page-inner,
+.book-body .page-wrapper .page-inner section,
+.book-body .page-wrapper .page-inner section.normal {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+}
+.book-body .page-wrapper .page-inner {
+  max-width: 820px;
+  padding: 24px 24px 60px;
+}
+.book-body .page-wrapper .page-inner section.normal {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* ── header: only the sidebar toggle survives ─────────────────── */
+.book-header,
+.book-header.fixed {
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  box-shadow: none;
+}
+.book-header h1 {
+  font-family: var(--font);
+  font-weight: 600;
+  opacity: 1;
+}
+.book-header h1 a,
+.book-header .btn {
+  color: var(--muted);
+}
+.book-header .btn:hover,
+.book-header h1 a:hover {
+  color: var(--fg);
+  background: var(--hover);
+  text-decoration: none;
+}
+.book-header .font-settings,
+.book-header .js-toolbar-action[aria-label='Font Settings'],
+#font-settings-wrapper,
+.book-summary .gitbook-link {
+  display: none !important;
+}
+
+/* ── sidebar ──────────────────────────────────────────────────── */
+.book-summary {
+  background: var(--card);
+  border-right: 1px solid var(--line);
+  color: var(--fg);
+  font-family: var(--font);
+}
+.book-summary ul.summary li a,
+.book-summary ul.summary li span {
+  color: var(--muted);
+  padding: 8px 15px;
+}
+.book-summary ul.summary li a:hover {
+  color: var(--fg);
+  background: var(--hover);
+  text-decoration: none;
+}
+.book-summary ul.summary li.active > a {
+  color: var(--accent);
+  background: var(--hover);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.book-summary ul.summary li.header {
+  color: var(--fg);
+  font-weight: 600;
+  padding: 10px 15px 4px;
+}
+.book-summary ul.summary li.divider {
+  background: var(--line);
+  height: 1px;
+}
+.book-summary ul.summary li > a > b {
+  display: none;
+}
+
+/* the search box ships white */
+#book-search-input {
+  background: var(--card);
+  border-color: var(--line);
+}
+#book-search-input input,
+#book-search-input input:focus,
+#book-search-input input:hover {
+  color: var(--fg);
+  font-family: var(--font);
+}
+#book-search-input input::placeholder {
+  color: var(--muted);
+}
+.book-search-results .search-results .no-results,
+.book-search-results .search-results-title {
+  color: var(--muted);
+}
+.book-search-results .search-results .has-results .search-results-item {
+  border-color: var(--line);
+}
+
+/* ── content ──────────────────────────────────────────────────── */
+.book-body .page-wrapper .page-inner section.normal h1,
+.book-body .page-wrapper .page-inner section.normal h2,
+.book-body .page-wrapper .page-inner section.normal h3,
+.book-body .page-wrapper .page-inner section.normal h4 {
+  color: var(--fg);
+  font-family: var(--font);
+  font-weight: 700;
+  border-color: var(--line);
+}
+.book-body .page-wrapper .page-inner section.normal h1 {
+  font-size: 1.6em;
+}
+.book-body .page-wrapper .page-inner section.normal h2 {
+  font-size: 1.25em;
+  padding-top: 0.6em;
+  border-top: 1px solid var(--line);
+  border-bottom: 0;
+}
+.book-body .page-wrapper .page-inner section.normal h3 {
+  font-size: 1.05em;
+  color: var(--muted);
+}
+.book-body .page-wrapper .page-inner section.normal a {
+  color: var(--link);
+}
+.book-body .page-wrapper .page-inner section.normal a:hover {
+  color: var(--purple);
+  text-decoration: underline;
+}
+.book-body .page-wrapper .page-inner section.normal strong {
+  color: var(--fg);
+}
+.book-body .page-wrapper .page-inner section.normal code {
+  background: var(--card);
+  color: var(--fg);
+  border: 0;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+.book-body .page-wrapper .page-inner section.normal pre {
+  background: var(--card);
+  color: var(--fg);
+  border: 0;
+  border-radius: 4px;
+  padding: 12px 14px;
+}
+.book-body .page-wrapper .page-inner section.normal pre > code {
+  background: none;
+  padding: 0;
+}
+.book-body .page-wrapper .page-inner section.normal table {
+  border-color: var(--line);
+}
+.book-body .page-wrapper .page-inner section.normal table th,
+.book-body .page-wrapper .page-inner section.normal table td {
+  border-color: var(--line);
+  padding: 6px 10px;
+}
+.book-body .page-wrapper .page-inner section.normal table th {
+  background: var(--card);
+  color: var(--muted);
+  font-weight: 500;
+}
+.book-body .page-wrapper .page-inner section.normal table tr {
+  background: transparent;
+  border-color: var(--line);
+}
+.book-body .page-wrapper .page-inner section.normal table tr:nth-child(2n) {
+  background: var(--card);
+}
+.book-body .page-wrapper .page-inner section.normal blockquote {
+  border-left: 2px solid var(--line);
+  color: var(--muted);
+}
+.book-body .page-wrapper .page-inner section.normal hr {
+  background: var(--line);
+  height: 1px;
+}
+.book-body .page-wrapper .page-inner section.normal img {
+  max-width: 100%;
+}
+
+/* ── page navigation arrows ───────────────────────────────────── */
+.navigation {
+  color: var(--muted);
+}
+.navigation:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+.book .book-body .navigation.navigation-prev,
+.book .book-body .navigation.navigation-next {
+  background: transparent;
+}
+
+/* highlight.js (HonKit's highlight plugin) on the tokens */
+.hljs {
+  background: var(--card);
+  color: var(--fg);
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in {
+  color: var(--pink);
+}
+.hljs-string,
+.hljs-attr {
+  color: var(--orange);
+}
+.hljs-comment {
+  color: var(--muted);
+}
+.hljs-number,
+.hljs-literal {
+  color: var(--purple);
+}
+.hljs-title,
+.hljs-section {
+  color: var(--green);
+}
