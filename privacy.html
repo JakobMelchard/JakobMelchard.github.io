@@ -14,9 +14,11 @@
     <p>This covers "mimi rclone", the Google OAuth app used by the maintainer's
     own home server to back up its data to the maintainer's own Google Drive.
     It is for personal use only and is not offered to anyone else.</p>
-    <p>The app requests only the Google Drive scope <code>drive.file</code>, so
-    it can read and write only the files it created itself. It cannot see any
-    other file in the Drive. Backups are encrypted on the server before upload.</p>
+    <p>The app requests only the Google Drive scope <code>drive.file</code>:
+    access to files the app created, plus any file the user explicitly opens
+    with or shares to the app. It has no access to the rest of the Drive. In
+    practice it only touches its own backup folder. Backups are encrypted on
+    the server before upload.</p>
     <p>No data is collected, sold, shared with third parties or used for any
     purpose other than that backup. No analytics or cookies are used on this
     site.</p>
