@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Not found</title>
+  <!-- Pages serves this for any path no project site claims; /tu/<path> keeps its path under /notes/. -->
+  <script>
+    const m = location.pathname.match(/^\/tu(\/.*)?$/);
+    if (m) location.replace('/notes' + (m[1] || '/') + location.search + location.hash);
+  </script>
+  <link rel="stylesheet" href="/assets/tokens.css">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<main class="shell">
+  <section>
+    <h1>Not found</h1>
+    <p>Looking for the TU Wien study wiki? It is at <a href="/notes/">docs.melchard.org/notes</a>.</p>
+    <p class="foot-links"><a href="/">docs.melchard.org</a></p>
+  </section>
+</main>
+</body>
+</html>
