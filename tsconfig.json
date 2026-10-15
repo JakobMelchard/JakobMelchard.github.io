@@ -1,0 +1,5 @@
+{
+  "extends": "@jakobmelchard/config/tsconfig",
+  "compilerOptions": { "types": [] },
+  "include": ["assets"]
+}

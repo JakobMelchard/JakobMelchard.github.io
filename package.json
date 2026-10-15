@@ -1,0 +1,21 @@
+{
+  "name": "jakobmelchard.github.io",
+  "private": true,
+  "type": "module",
+  "description": "Dev tooling only: the site itself is buildless and has no runtime dependencies.",
+  "scripts": {
+    "check": "prettier --check . && tsc",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "prettier": "@jakobmelchard/config/prettier",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@jakobmelchard/config": "github:JakobMelchard/.config#v3.0.0",
+    "eslint": "^10.12.0",
+    "eslint-plugin-jsdoc": "^64.5.4",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "^5"
+  }
+}
