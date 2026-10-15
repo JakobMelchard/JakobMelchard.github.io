@@ -11,13 +11,13 @@ permissions:
 
 jobs:
   js:
-    uses: JakobMelchard/.github/.github/workflows/node.yml@4258fca96cbd14e90054debed585f9cf8aad04f7 # v2.1.0
+    uses: JakobMelchard/.github/.github/workflows/node.yml@da5c1f89e2029e3f3e7a39a5dc1c9f9d5ad2084e # v2.2.3
     with:
       install-cmd: npm ci
       check-cmd: npm run check # prettier --check, tsc --checkJs (strict)
       lint-cmd: npx eslint --max-warnings 0 .
 
   hooks:
-    uses: JakobMelchard/.github/.github/workflows/hooks.yml@4258fca96cbd14e90054debed585f9cf8aad04f7 # v2.1.0
+    uses: JakobMelchard/.github/.github/workflows/hooks.yml@da5c1f89e2029e3f3e7a39a5dc1c9f9d5ad2084e # v2.2.3
     with:
       skip: prettier,eslint # need node_modules; the js job runs both
