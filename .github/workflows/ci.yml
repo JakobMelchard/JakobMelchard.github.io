@@ -13,20 +13,11 @@ jobs:
   js:
     uses: JakobMelchard/.github/.github/workflows/node.yml@4258fca96cbd14e90054debed585f9cf8aad04f7 # v2.1.0
     with:
-      install-cmd: "" # no package.json, nothing to install
-      check-cmd: |
-        rc=0
-        for f in assets/*.js; do
-          echo "checking $f"
-          node --check "$f" || rc=1
-        done
-        exit $rc
-      # No config file: eslint defaults (latest syntax, ES modules) plus the browser globals in use.
-      lint-cmd: >-
-        npx --yes eslint@10.12.0 --no-config-lookup
-        --global document,window,fetch,AbortSignal
-        --rule '{"no-undef": "error", "no-unused-vars": "error"}'
-        assets
+      install-cmd: npm ci
+      check-cmd: npm run check # prettier --check, tsc --checkJs (strict)
+      lint-cmd: npx eslint --max-warnings 0 .
 
   hooks:
     uses: JakobMelchard/.github/.github/workflows/hooks.yml@4258fca96cbd14e90054debed585f9cf8aad04f7 # v2.1.0
+    with:
+      skip: prettier,eslint # need node_modules; the js job runs both
