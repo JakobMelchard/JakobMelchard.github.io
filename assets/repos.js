@@ -79,21 +79,26 @@ async function load() {
   }
 }
 
-const KEY = `repos:${user}`
+const KEY = `repos:${user}:${skip}`
 const TTL = 60 * 60e3
 
 /** @returns {{ at: number, repos: Repo[] } | null} the cached list, or null when storage is empty or blocked */
 function cached() {
   try {
     const c = JSON.parse(globalThis.localStorage.getItem(KEY) || 'null')
-    return c && Array.isArray(c.repos) ? c : null
+    const ok =
+      c &&
+      Number.isFinite(c.at) &&
+      Array.isArray(c.repos) &&
+      c.repos.every((/** @type {Repo | null} */ r) => typeof r?.name === 'string')
+    return ok ? c : null
   } catch {
     return null
   }
 }
 
 const filterInput = /** @type {HTMLInputElement} */ (document.getElementById('filter'))
-filterInput.addEventListener('input', () => render(filterInput.value))
+filterInput.addEventListener('input', () => allRepos.length && render(filterInput.value))
 
 /** @param {Repo[]} repos shows these repos, keeping the current filter */
 function show(repos) {
