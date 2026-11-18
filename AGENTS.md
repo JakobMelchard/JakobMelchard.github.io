@@ -11,6 +11,11 @@ GitHub Pages serves the repo directly, `.nojekyll`, `CNAME` pins the domain.
 
 ```
 index.html              # landing page
+404.html                # not-found fallback (loads tu-redirect.js)
+privacy.html            # mimi rclone Google OAuth privacy policy
+tu/index.html           # meta-refresh redirect from /tu/ to /notes/
+assets/tokens.css       # vendored design tokens from JakobMelchard/web (checked by web-tokens hook)
+assets/honkit.css       # shared HonKit dark theme stylesheet for org docs sites
 assets/style.css
 assets/repos.js         # fetches (all pages) and renders public, non-fork, non-archived repos
 assets/keyboard-nav.js  # / to filter, arrow keys to move, Enter to open
